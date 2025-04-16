@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 
 // Main component
-const ESPNPersonalityShowdown = () => {
+const TriviaShowdown = () => {
   // Game states
   const [gameState, setGameState] = useState("selection"); // selection, intro, playing, reaction, results
   const [selectedPersonality, setSelectedPersonality] = useState(null);
@@ -610,4 +610,4 @@ const ESPNPersonalityShowdown = () => {
   );
 };
 
-export default ESPNPersonalityShowdown;
+export default TriviaShowdown;

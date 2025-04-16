@@ -1,10 +1,16 @@
 import "./App.css";
-import ESPNPersonalityShowdown from "./game/espn-game";
+import { Routes, Route, Navigate } from "react-router-dom";
+import TriviaShowdown from "./game/trivia-showdown";
+import MillionaireTrivia from "./game/millionaire-trivia";
 
 function App() {
   return (
     <div>
-      <ESPNPersonalityShowdown />
+      <Routes>
+        <Route path="/Trivia_Showdown" element={<TriviaShowdown />} />
+        <Route path="/Millionaire_Trivia" element={<MillionaireTrivia />} />
+        <Route path="*" element={<Navigate to="/Trivia_Showdown" replace />} />
+      </Routes>
     </div>
   );
 }
