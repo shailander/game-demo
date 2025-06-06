@@ -7,7 +7,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-const MillionaireTrivia = () => {
+const ESPNSportsMillionaire = () => {
   // Game states
   const [gameState, setGameState] = useState("welcome"); // welcome, playing, using-lifeline, results, shop
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -538,8 +538,10 @@ const MillionaireTrivia = () => {
             className="text-xs bg-yellow-500 text-white px-2 py-1 rounded flex items-center"
             onClick={() => setShowingShopModal(true)}
           >
-            <ShoppingCart className="w-3 h-3 mr-1" />
-            Get More Lifelines
+            <div className="w-3 h-3 mr-1 bg-cyan-400 rounded-full flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-white transform rotate-45"></div>
+            </div>
+            Get Tokens
           </button>
         </div>
 
@@ -575,7 +577,7 @@ const MillionaireTrivia = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
             <div className="bg-white p-6 rounded-lg w-full max-w-md mx-4">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">ESPN+ Lifeline Shop</h3>
+                <h3 className="text-lg font-bold">Token Shop</h3>
                 <button
                   className="text-gray-500 hover:text-gray-700"
                   onClick={() => setShowingShopModal(false)}
@@ -585,8 +587,8 @@ const MillionaireTrivia = () => {
               </div>
 
               <p className="text-sm mb-4">
-                Purchase additional lifelines to help you reach the million
-                dollars!
+                Purchase additional lifelines with tokens to help you reach the
+                million dollars!
               </p>
 
               <div className="space-y-4 mb-6">
@@ -611,10 +613,13 @@ const MillionaireTrivia = () => {
 
                     <div className="ml-2">
                       <button
-                        className="px-3 py-1 bg-green-600 text-white text-sm rounded"
+                        className="px-3 py-1 bg-green-600 text-white text-sm rounded flex items-center"
                         onClick={() => purchaseLifelineRefill(lifeline.id)}
                       >
-                        $0.99
+                        <div className="w-4 h-4 mr-1 bg-cyan-400 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white transform rotate-45"></div>
+                        </div>
+                        50
                       </button>
                     </div>
                   </div>
@@ -634,14 +639,17 @@ const MillionaireTrivia = () => {
 
                   <div className="ml-2">
                     <button
-                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded"
+                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded flex items-center"
                       onClick={() => {
                         lifelines.forEach((l) =>
                           purchaseLifelineRefill(l.id, 3)
                         );
                       }}
                     >
-                      $5.99
+                      <div className="w-4 h-4 mr-1 bg-cyan-400 rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white transform rotate-45"></div>
+                      </div>
+                      120
                     </button>
                   </div>
                 </div>
@@ -660,20 +668,23 @@ const MillionaireTrivia = () => {
 
                   <div className="ml-2">
                     <button
-                      className="px-3 py-1 bg-purple-600 text-white text-sm rounded"
+                      className="px-3 py-1 bg-purple-600 text-white text-sm rounded flex items-center"
                       onClick={() => {
                         // In a real app, this would trigger subscription flow
                         setShowingShopModal(false);
                       }}
                     >
-                      $9.99/mo
+                      <div className="w-4 h-4 mr-1 bg-cyan-400 rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white transform rotate-45"></div>
+                      </div>
+                      ∞
                     </button>
                   </div>
                 </div>
               </div>
 
               <div className="text-center text-xs text-gray-500">
-                Purchases will be charged to your App Store account
+                Tokens will be charged to your App Store account
               </div>
             </div>
           </div>
@@ -835,4 +846,4 @@ const MillionaireTrivia = () => {
   );
 };
 
-export default MillionaireTrivia;
+export default ESPNSportsMillionaire;
