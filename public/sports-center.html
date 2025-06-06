@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESPN Top 10 Ranking Game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d, #000000);
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+        user-select: none;
+      }
+
+      .container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+        padding-bottom: 150px;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(20px);
+      }
+
+      .logo {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #c41e3a;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        font-size: 1em;
+        color: #ccc;
+        opacity: 0.9;
+      }
+
+      /* Sport Selection */
+      .sport-selection {
+        text-align: center;
+      }
+
+      .selection-title {
+        font-size: 1.8em;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #c41e3a;
+      }
+
+      .sports-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .sport-card {
+        background: linear-gradient(135deg, #c41e3a, #a01729);
+        padding: 25px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sport-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(196, 30, 58, 0.5);
+      }
+
+      .sport-card:active {
+        transform: scale(0.95);
+      }
+
+      .sport-icon {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .sport-name {
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+
+      /* Game Phase */
+      .game-phase {
+        display: none;
+      }
+
+      .phase-header {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .phase-indicator {
+        background: linear-gradient(135deg, #c41e3a, #a01729);
+        padding: 8px 20px;
+        border-radius: 25px;
+        display: inline-block;
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+      }
+
+      .section-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #c41e3a;
+        text-align: center;
+      }
+
+      /* Highlights */
+      .highlight-item {
+        background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #333;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .highlight-item:hover {
+        border-color: #c41e3a;
+        transform: translateX(5px);
+      }
+
+      .highlight-item.selected {
+        background: linear-gradient(135deg, #c41e3a, #a01729);
+        border-color: #fff;
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(196, 30, 58, 0.4);
+      }
+
+      .play-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .play-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .highlight-content {
+        flex: 1;
+      }
+
+      .highlight-title {
+        font-weight: bold;
+        font-size: 1.05em;
+        margin-bottom: 5px;
+      }
+
+      .highlight-description {
+        font-size: 0.9em;
+        opacity: 0.85;
+      }
+
+      .selection-number {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        background: #c41e3a;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9em;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+        border: 2px solid white;
+        z-index: 10;
+      }
+
+      /* Your Top 10 */
+      .your-top10 {
+        background: rgba(196, 30, 58, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 2px solid #c41e3a;
+      }
+
+      .drop-zone {
+        min-height: 60px;
+        border: 2px dashed #c41e3a;
+        border-radius: 12px;
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #c41e3a;
+        font-style: italic;
+        opacity: 0.7;
+        padding: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .drop-zone.filled {
+        border: none;
+        opacity: 1;
+        font-style: normal;
+        background: linear-gradient(135deg, #2e8b57, #228b22);
+        box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+      }
+
+      .drop-zone.empty-glow {
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 5px rgba(196, 30, 58, 0.5);
+        }
+        to {
+          box-shadow: 0 0 20px rgba(196, 30, 58, 0.8);
+        }
+      }
+
+      .drop-zone-content {
+        flex: 1;
+      }
+
+      .arrow-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-left: 10px;
+      }
+
+      .arrow-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+      }
+
+      .arrow-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .arrow-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .rank-number {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #c41e3a;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9em;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Game UI */
+      .game-ui {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.3),
+          rgba(0, 0, 0, 0.95)
+        );
+        padding: 20px;
+        border-top: 2px solid #c41e3a;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+      }
+
+      .ui-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 15px;
+      }
+
+      .stat-bubble {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 15px;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid rgba(196, 30, 58, 0.3);
+        backdrop-filter: blur(5px);
+      }
+
+      .stat-number {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #c41e3a;
+      }
+
+      .stat-label {
+        font-size: 0.8em;
+        opacity: 0.8;
+      }
+
+      .main-button {
+        width: 100%;
+        background: linear-gradient(135deg, #c41e3a, #a01729);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-size: 1.1em;
+        font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(196, 30, 58, 0.4);
+      }
+
+      .main-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .main-button:active {
+        transform: scale(0.98);
+      }
+
+      /* Results */
+      .results-area {
+        display: none;
+      }
+
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .ranking-column {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .community-column {
+        border: 2px solid #2e8b57;
+      }
+
+      .your-column {
+        border: 2px solid #c41e3a;
+      }
+
+      .agreement-meter {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .meter-bar {
+        background: rgba(255, 255, 255, 0.2);
+        height: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 15px 0;
+      }
+
+      .meter-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #c41e3a, #2e8b57);
+        transition: width 2s ease;
+        width: 0%;
+      }
+
+      .banter-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px 0;
+        text-align: center;
+        border: 1px solid rgba(196, 30, 58, 0.3);
+      }
+
+      .banter-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+        font-style: italic;
+      }
+
+      /* Video Modal */
+      .video-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .video-content {
+        background: #1a1a1a;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 90%;
+      }
+
+      .close-video {
+        background: #c41e3a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-top: 15px;
+      }
+
+      @media (max-width: 768px) {
+        .comparison-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sport-icon {
+          font-size: 2em;
+        }
+
+        .highlight-item {
+          padding: 12px;
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">📺 ESPN</div>
+        <div class="subtitle">Rank The Greatest Top 10 Moments</div>
+      </div>
+
+      <!-- Sport Selection Screen -->
+      <div id="sportSelection" class="sport-selection">
+        <div class="selection-title">Choose Your Sport</div>
+        <div class="sports-grid">
+          <div class="sport-card" onclick="selectSport('all')">
+            <div class="sport-icon">🌟</div>
+            <div class="sport-name">All Sports</div>
+          </div>
+          <div class="sport-card" onclick="selectSport('basketball')">
+            <div class="sport-icon">🏀</div>
+            <div class="sport-name">Basketball</div>
+          </div>
+          <div class="sport-card" onclick="selectSport('football')">
+            <div class="sport-icon">🏈</div>
+            <div class="sport-name">Football</div>
+          </div>
+          <div class="sport-card" onclick="selectSport('soccer')">
+            <div class="sport-icon">⚽</div>
+            <div class="sport-name">Soccer</div>
+          </div>
+          <div class="sport-card" onclick="selectSport('baseball')">
+            <div class="sport-icon">⚾</div>
+            <div class="sport-name">Baseball</div>
+          </div>
+          <div class="sport-card" onclick="selectSport('olympics')">
+            <div class="sport-icon">🥇</div>
+            <div class="sport-name">Olympics</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Phase -->
+      <div id="gamePhase" class="game-phase">
+        <div class="phase-header">
+          <div class="phase-indicator">BUILD YOUR TOP 10</div>
+          <div>Tap highlights to add them to your rankings!</div>
+        </div>
+
+        <!-- Highlights Pool -->
+        <div class="highlights-container">
+          <div class="section-title" id="sectionTitle">Greatest Moments</div>
+          <div id="highlightsPool"></div>
+        </div>
+
+        <!-- Your Top 10 -->
+        <div class="your-top10">
+          <div class="section-title">🎯 Your Top 10</div>
+          <div id="yourRankings"></div>
+        </div>
+      </div>
+
+      <!-- Results Phase -->
+      <div id="resultsPhase" class="results-area">
+        <div class="comparison-grid">
+          <div class="ranking-column community-column">
+            <div class="section-title">🌍 Community Top 10</div>
+            <div id="communityRankings"></div>
+          </div>
+          <div class="ranking-column your-column">
+            <div class="section-title">🎯 Your Top 10</div>
+            <div id="yourFinalRankings"></div>
+          </div>
+        </div>
+
+        <div class="agreement-meter">
+          <h3>Taste Agreement</h3>
+          <div class="meter-bar">
+            <div class="meter-fill" id="agreementFill"></div>
+          </div>
+          <div id="agreementText">Calculating...</div>
+        </div>
+
+        <div class="banter-section">
+          <div class="banter-text" id="banterText">
+            Let's see how your sports taste stacks up! 🏀
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0">
+          <button class="main-button" onclick="resetGame()">
+            Play Again 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game UI -->
+    <div class="game-ui" id="gameUI" style="display: none">
+      <div class="ui-stats">
+        <div class="stat-bubble">
+          <div class="stat-number" id="selectedCount">0</div>
+          <div class="stat-label">Selected</div>
+        </div>
+        <div class="stat-bubble">
+          <div class="stat-number" id="remainingCount">10</div>
+          <div class="stat-label">Remaining</div>
+        </div>
+      </div>
+      <button
+        class="main-button"
+        id="mainButton"
+        onclick="submitRankings()"
+        disabled
+      >
+        Select 10 More
+      </button>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+      <div class="video-content">
+        <h3 id="videoTitle">Video Preview</h3>
+        <p id="videoDescription">Imagine watching this epic moment unfold!</p>
+        <div
+          style="
+            background: #000;
+            padding: 40px;
+            margin: 20px 0;
+            border-radius: 10px;
+          "
+        >
+          🎬 VIDEO PLAYING<br />
+          <small
+            >(In a real app, this would be the actual highlight video)</small
+          >
+        </div>
+        <button class="close-video" onclick="closeVideo()">Close</button>
+      </div>
+    </div>
+
+    <script>
+      // Game state
+      let currentSport = "";
+      let userRankings = [];
+      let gamePhase = "selection";
+      let selectedHighlights = [];
+
+      // Sports data
+      const sportsData = {
+        all: [
+          {
+            id: 1,
+            title: "Jesse Owens' 4 Golds",
+            description: "Dominates at 1936 Berlin Olympics",
+            communityRank: 1,
+          },
+          {
+            id: 2,
+            title: "Jordan's 'Flu Game'",
+            description: "MJ scores 38 points while battling illness",
+            communityRank: 2,
+          },
+          {
+            id: 3,
+            title: "The Miracle on Ice",
+            description: "USA defeats Soviet Union in Olympic hockey",
+            communityRank: 3,
+          },
+          {
+            id: 4,
+            title: "28-3 Comeback",
+            description: "Patriots' historic Super Bowl comeback",
+            communityRank: 4,
+          },
+          {
+            id: 5,
+            title: "Kobe's 81-Point Game",
+            description: "Second-highest scoring game in NBA history",
+            communityRank: 5,
+          },
+          {
+            id: 6,
+            title: "Tiger's 2019 Masters",
+            description: "Epic comeback victory after struggles",
+            communityRank: 6,
+          },
+          {
+            id: 7,
+            title: "Leicester City's Miracle",
+            description: "5000-1 odds to win Premier League",
+            communityRank: 7,
+          },
+          {
+            id: 8,
+            title: "Babe Ruth's Called Shot",
+            description: "The Bambino calls his World Series homer",
+            communityRank: 8,
+          },
+          {
+            id: 9,
+            title: "Ali vs Frazier III",
+            description: "Thrilla in Manila boxing classic",
+            communityRank: 9,
+          },
+          {
+            id: 10,
+            title: "Secretariat's Triple Crown",
+            description: "Wins Belmont Stakes by 31 lengths",
+            communityRank: 10,
+          },
+          {
+            id: 11,
+            title: "Derek Jeter Walk-Off",
+            description: "Mr. November's clutch World Series homer",
+            communityRank: 11,
+          },
+          {
+            id: 12,
+            title: "Liverpool's Istanbul Miracle",
+            description: "3-0 comeback vs AC Milan in Champions League",
+            communityRank: 12,
+          },
+          {
+            id: 13,
+            title: "Warriors 73-Win Season",
+            description: "Golden State breaks regular season record",
+            communityRank: 13,
+          },
+          {
+            id: 14,
+            title: "Usain Bolt's Triple Triple",
+            description: "9 gold medals across 3 Olympics",
+            communityRank: 14,
+          },
+        ],
+        basketball: [
+          {
+            id: 2,
+            title: "Jordan's 'Flu Game'",
+            description: "MJ scores 38 points while battling illness",
+            communityRank: 1,
+          },
+          {
+            id: 5,
+            title: "Kobe's 81-Point Game",
+            description: "Second-highest scoring game in NBA history",
+            communityRank: 2,
+          },
+          {
+            id: 15,
+            title: "LeBron's Block",
+            description: "Game-saving block in 2016 Finals Game 7",
+            communityRank: 3,
+          },
+          {
+            id: 16,
+            title: "Magic's Baby Hook",
+            description: "1987 Finals Game 4 sky hook over Parish",
+            communityRank: 4,
+          },
+          {
+            id: 17,
+            title: "Bird Steals the Ball",
+            description: "Iconic steal and assist in 1987 playoffs",
+            communityRank: 5,
+          },
+          {
+            id: 13,
+            title: "Warriors 73-Win Season",
+            description: "Golden State breaks regular season record",
+            communityRank: 6,
+          },
+          {
+            id: 18,
+            title: "Reggie's 8 Points in 9 Seconds",
+            description: "Miller's legendary comeback vs Knicks",
+            communityRank: 7,
+          },
+          {
+            id: 19,
+            title: "Kawhi's Bounce Shot",
+            description: "Game 7 buzzer beater vs 76ers",
+            communityRank: 8,
+          },
+          {
+            id: 20,
+            title: "Ray Allen's Corner Three",
+            description: "Game 6 Finals save for Miami Heat",
+            communityRank: 9,
+          },
+          {
+            id: 21,
+            title: "Dame's Series Winner",
+            description: "Lillard's 37-foot buzzer beater vs OKC",
+            communityRank: 10,
+          },
+          {
+            id: 22,
+            title: "Shaq's Backboard Shatter",
+            description: "O'Neal destroys rim in rookie season",
+            communityRank: 11,
+          },
+          {
+            id: 23,
+            title: "AI Steps Over Lue",
+            description: "Iverson's iconic crossover moment",
+            communityRank: 12,
+          },
+          {
+            id: 24,
+            title: "Vince's Olympic Dunk",
+            description: "Carter jumps over 7-footer in Olympics",
+            communityRank: 13,
+          },
+          {
+            id: 25,
+            title: "Stockton's Series Winner",
+            description: "Jazz reach Finals with buzzer beater",
+            communityRank: 14,
+          },
+        ],
+        football: [
+          {
+            id: 4,
+            title: "28-3 Comeback",
+            description: "Patriots' historic Super Bowl comeback",
+            communityRank: 1,
+          },
+          {
+            id: 26,
+            title: "The Catch",
+            description: "Joe Montana to Dwight Clark in NFC Championship",
+            communityRank: 2,
+          },
+          {
+            id: 27,
+            title: "Helmet Catch",
+            description: "David Tyree's miracle catch vs Patriots",
+            communityRank: 3,
+          },
+          {
+            id: 28,
+            title: "The Immaculate Reception",
+            description: "Franco Harris' legendary playoff catch",
+            communityRank: 4,
+          },
+          {
+            id: 29,
+            title: "Beast Quake",
+            description: "Marshawn Lynch's earthquake-causing run",
+            communityRank: 5,
+          },
+          {
+            id: 30,
+            title: "Wide Right",
+            description: "Scott Norwood's missed Super Bowl kick",
+            communityRank: 6,
+          },
+          {
+            id: 31,
+            title: "Malcolm Butler's Pick",
+            description: "Goal line interception seals Super Bowl",
+            communityRank: 7,
+          },
+          {
+            id: 32,
+            title: "Brett Favre Monday Night",
+            description: "Emotional performance after father's death",
+            communityRank: 8,
+          },
+          {
+            id: 33,
+            title: "Music City Miracle",
+            description: "Titans' lateral kickoff return",
+            communityRank: 9,
+          },
+          {
+            id: 34,
+            title: "Aaron Rodgers Hail Mary",
+            description: "Playoff miracle vs Cardinals",
+            communityRank: 10,
+          },
+          {
+            id: 35,
+            title: "Desean Jackson's Return",
+            description: "Punt return beats Giants at buzzer",
+            communityRank: 11,
+          },
+          {
+            id: 36,
+            title: "Odell's One-Hand Grab",
+            description: "Impossible Sunday Night catch",
+            communityRank: 12,
+          },
+          {
+            id: 37,
+            title: "Saints Onside Kick",
+            description: "Super Bowl surprise to start half",
+            communityRank: 13,
+          },
+          {
+            id: 38,
+            title: "Flacco's Mile High Miracle",
+            description: "70-yard TD bomb in playoffs",
+            communityRank: 14,
+          },
+        ],
+        soccer: [
+          {
+            id: 7,
+            title: "Leicester City's Miracle",
+            description: "5000-1 odds to win Premier League",
+            communityRank: 1,
+          },
+          {
+            id: 39,
+            title: "Maradona's Hand of God",
+            description: "Controversial goal in 1986 World Cup",
+            communityRank: 2,
+          },
+          {
+            id: 12,
+            title: "Liverpool's Istanbul Miracle",
+            description: "3-0 comeback vs AC Milan in Champions League",
+            communityRank: 3,
+          },
+          {
+            id: 40,
+            title: "Aguero's Title Winner",
+            description: "Last-second goal to win Premier League",
+            communityRank: 4,
+          },
+          {
+            id: 41,
+            title: "Brazil vs Germany 7-1",
+            description: "Shocking World Cup semifinal collapse",
+            communityRank: 5,
+          },
+          {
+            id: 42,
+            title: "Zidane's Headbutt",
+            description: "World Cup final incident that ended career",
+            communityRank: 6,
+          },
+          {
+            id: 43,
+            title: "Ronaldinho's Clasico",
+            description: "Standing ovation at Real Madrid",
+            communityRank: 7,
+          },
+          {
+            id: 44,
+            title: "Iceland Beats England",
+            description: "Biggest upset in Euro 2016",
+            communityRank: 8,
+          },
+          {
+            id: 45,
+            title: "Messi's 91 Goals",
+            description: "Record-breaking calendar year",
+            communityRank: 9,
+          },
+          {
+            id: 46,
+            title: "Barca's 6-1 PSG Comeback",
+            description: "Historic Champions League remontada",
+            communityRank: 10,
+          },
+          {
+            id: 47,
+            title: "Gerrard's Istanbul Final",
+            description: "Captain's comeback performance",
+            communityRank: 11,
+          },
+          {
+            id: 48,
+            title: "Beckham's Halfway Line",
+            description: "Goal from center circle vs Wimbledon",
+            communityRank: 12,
+          },
+          {
+            id: 49,
+            title: "Roberto Carlos Free Kick",
+            description: "Physics-defying goal vs France",
+            communityRank: 13,
+          },
+          {
+            id: 50,
+            title: "Greece Wins Euro 2004",
+            description: "Ultimate underdog championship",
+            communityRank: 14,
+          },
+        ],
+        baseball: [
+          {
+            id: 8,
+            title: "Babe Ruth's Called Shot",
+            description: "The Bambino calls his World Series homer",
+            communityRank: 1,
+          },
+          {
+            id: 51,
+            title: "Kirk Gibson's Home Run",
+            description: "Injured Dodger limps to World Series heroics",
+            communityRank: 2,
+          },
+          {
+            id: 52,
+            title: "Red Sox Reverse Curse",
+            description: "2004 ALCS comeback from 3-0 down",
+            communityRank: 3,
+          },
+          {
+            id: 53,
+            title: "Joe Carter's Walk-Off",
+            description: "Blue Jays win 1993 World Series",
+            communityRank: 4,
+          },
+          {
+            id: 54,
+            title: "Don Larsen's Perfect Game",
+            description: "Only perfect game in World Series history",
+            communityRank: 5,
+          },
+          {
+            id: 55,
+            title: "Cubs End the Curse",
+            description: "2016 World Series ends 108-year drought",
+            communityRank: 6,
+          },
+          {
+            id: 11,
+            title: "Derek Jeter Walk-Off",
+            description: "Mr. November's clutch World Series homer",
+            communityRank: 7,
+          },
+          {
+            id: 56,
+            title: "Carlton Fisk Waves It Fair",
+            description: "Iconic 1975 World Series moment",
+            communityRank: 8,
+          },
+          {
+            id: 57,
+            title: "Hank Aaron's 715th",
+            description: "Breaks Babe Ruth's home run record",
+            communityRank: 9,
+          },
+          {
+            id: 58,
+            title: "Cal Ripken's Streak",
+            description: "2,131 consecutive games played",
+            communityRank: 10,
+          },
+          {
+            id: 59,
+            title: "Willie Mays' Over-Shoulder",
+            description: "The Catch in 1954 World Series",
+            communityRank: 11,
+          },
+          {
+            id: 60,
+            title: "Mark McGwire's 62nd",
+            description: "Breaks single-season home run record",
+            communityRank: 12,
+          },
+          {
+            id: 61,
+            title: "Ted Williams .406",
+            description: "Last player to hit .400 in season",
+            communityRank: 13,
+          },
+          {
+            id: 62,
+            title: "Lou Gehrig's Farewell",
+            description: "Luckiest man speech at Yankee Stadium",
+            communityRank: 14,
+          },
+        ],
+        olympics: [
+          {
+            id: 1,
+            title: "Jesse Owens' 4 Golds",
+            description: "Dominates at 1936 Berlin Olympics",
+            communityRank: 1,
+          },
+          {
+            id: 3,
+            title: "The Miracle on Ice",
+            description: "USA defeats Soviet Union in hockey",
+            communityRank: 2,
+          },
+          {
+            id: 63,
+            title: "Nadia's Perfect 10",
+            description: "First perfect score in Olympic gymnastics",
+            communityRank: 4,
+          },
+          {
+            id: 64,
+            title: "Muhammad Ali Lights Torch",
+            description: "Emotional Olympic opening ceremony moment",
+            communityRank: 5,
+          },
+          {
+            id: 65,
+            title: "Kerri Strug's Vault",
+            description: "Injured gymnast secures team gold",
+            communityRank: 6,
+          },
+          {
+            id: 66,
+            title: "Michael Phelps 8 Golds",
+            description: "Most gold medals in single Olympics",
+            communityRank: 7,
+          },
+          {
+            id: 67,
+            title: "Bob Beamon's Leap",
+            description: "Long jump world record stands 23 years",
+            communityRank: 8,
+          },
+          {
+            id: 68,
+            title: "Mary Lou's Perfect 10",
+            description: "Retton wins all-around gymnastics gold",
+            communityRank: 9,
+          },
+          {
+            id: 69,
+            title: "Dream Team Dominates",
+            description: "1992 basketball team destroys competition",
+            communityRank: 10,
+          },
+          {
+            id: 70,
+            title: "Cathy Freeman's Gold",
+            description: "Aboriginal runner wins in Sydney",
+            communityRank: 11,
+          },
+          {
+            id: 71,
+            title: "Eddie the Eagle",
+            description: "British ski jumper becomes folk hero",
+            communityRank: 12,
+          },
+          {
+            id: 72,
+            title: "Simone Biles' Dominance",
+            description: "Gymnastics GOAT's incredible performances",
+            communityRank: 13,
+          },
+          {
+            id: 73,
+            title: "Mark Spitz's 7 Golds",
+            description: "Swimming legend's Munich performance",
+            communityRank: 14,
+          },
+        ],
+      };
+
+      // Banter responses
+      const banterResponses = [
+        {
+          condition: (agreement) => agreement >= 80,
+          responses: [
+            "🔥 You've got elite sports taste! Are you a secret analyst?",
+            "👑 Absolutely nailed it! Your sports IQ is off the charts!",
+            "🎯 The community bows down to your superior knowledge!",
+            "🏆 This is some premium sports wisdom right here!",
+          ],
+        },
+        {
+          condition: (agreement) => agreement >= 60,
+          responses: [
+            "👍 Solid picks! You know your sports moments!",
+            "🤝 Great minds think alike - you're in good company!",
+            "⚖️ Nice balance of crowd favorites and personal taste!",
+            "📊 Your sports radar is definitely calibrated well!",
+          ],
+        },
+        {
+          condition: (agreement) => agreement >= 40,
+          responses: [
+            "🤔 Interesting perspective! You march to your own drum!",
+            "🎭 Half mainstream, half rebel - we're intrigued!",
+            "🌊 You're definitely riding your own wave here!",
+            "🎲 Some spicy takes that got people talking!",
+          ],
+        },
+        {
+          condition: (agreement) => agreement >= 20,
+          responses: [
+            "🌶️ Holy hot takes! You're not following any crowd!",
+            "🦄 You're a certified sports contrarian - respect!",
+            "🎪 Your rankings are... certainly unique!",
+            "💫 Either genius or chaos - probably both!",
+          ],
+        },
+        {
+          condition: (agreement) => agreement < 20,
+          responses: [
+            "🤯 Did you rank these with your eyes closed?!",
+            "🎨 You're not ranking sports - you're creating art!",
+            "🚀 Your takes are from another dimension entirely!",
+            "🎪 The community is confused but oddly impressed!",
+          ],
+        },
+      ];
+
+      // Main game functions
+      function selectSport(sport) {
+        currentSport = sport;
+        selectedHighlights = sportsData[sport];
+
+        // Hide sport selection, show game
+        document.getElementById("sportSelection").style.display = "none";
+        document.getElementById("gamePhase").style.display = "block";
+        document.getElementById("gameUI").style.display = "block";
+
+        // Update title
+        const sportNames = {
+          all: "All Sports",
+          basketball: "Basketball",
+          football: "Football",
+          soccer: "Soccer",
+          baseball: "Baseball",
+          olympics: "Olympics",
+        };
+        document.getElementById(
+          "sectionTitle"
+        ).textContent = `${sportNames[sport]} Greatest Moments`;
+
+        // Initialize game
+        userRankings = [];
+        gamePhase = "voting";
+        renderGame();
+      }
+
+      function renderGame() {
+        renderHighlights();
+        renderRankings();
+        updateUI();
+      }
+
+      function renderHighlights() {
+        const pool = document.getElementById("highlightsPool");
+        pool.innerHTML = "";
+
+        selectedHighlights.forEach((highlight) => {
+          const item = document.createElement("div");
+          item.className = "highlight-item";
+          item.innerHTML = `
+                    <button class="play-button" onclick="playVideo(${highlight.id}, event)">▶️</button>
+                    <div class="highlight-content">
+                        <div class="highlight-title">${highlight.title}</div>
+                        <div class="highlight-description">${highlight.description}</div>
+                    </div>
+                `;
+
+          item.addEventListener("click", (e) => {
+            if (!e.target.classList.contains("play-button")) {
+              selectHighlight(highlight);
+            }
+          });
+
+          pool.appendChild(item);
+        });
+      }
+
+      function renderRankings() {
+        const container = document.getElementById("yourRankings");
+        container.innerHTML = "";
+
+        for (let i = 0; i < 10; i++) {
+          const zone = document.createElement("div");
+          zone.className = "drop-zone";
+
+          if (userRankings[i]) {
+            const highlight = userRankings[i];
+            zone.classList.add("filled");
+            zone.innerHTML = `
+                        <div class="drop-zone-content">
+                            <div class="highlight-title">${
+                              highlight.title
+                            }</div>
+                            <div class="highlight-description">${
+                              highlight.description
+                            }</div>
+                            <div class="rank-number">${i + 1}</div>
+                        </div>
+                        <div class="arrow-controls">
+                            <button class="arrow-btn" onclick="moveUp(${i})" ${
+              i === 0 ? "disabled" : ""
+            }>↑</button>
+                            <button class="arrow-btn" onclick="moveDown(${i})" ${
+              i === 9 ? "disabled" : ""
+            }>↓</button>
+                        </div>
+                    `;
+          } else {
+            zone.innerHTML = `<div class="drop-zone-content">#${
+              i + 1
+            } - Tap a moment to add here</div>`;
+            if (i === userRankings.length) {
+              zone.classList.add("empty-glow");
+            }
+          }
+
+          container.appendChild(zone);
+        }
+      }
+
+      function selectHighlight(highlight) {
+        // Check if already selected
+        if (userRankings.find((item) => item && item.id === highlight.id)) {
+          return;
+        }
+
+        // Check if we have room
+        if (userRankings.length >= 10) {
+          return;
+        }
+
+        // Add to rankings
+        userRankings.push(highlight);
+
+        // Update display
+        renderGame();
+
+        // Haptic feedback
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }
+
+      function updateUI() {
+        const selectedCount = userRankings.length;
+        const remainingCount = 10 - selectedCount;
+
+        document.getElementById("selectedCount").textContent = selectedCount;
+        document.getElementById("remainingCount").textContent = remainingCount;
+
+        const mainButton = document.getElementById("mainButton");
+        if (selectedCount === 10) {
+          mainButton.textContent = "Submit My Top 10 🚀";
+          mainButton.disabled = false;
+        } else {
+          mainButton.textContent = `Select ${remainingCount} More`;
+          mainButton.disabled = true;
+        }
+
+        // Update highlights with selection numbers
+        const highlightItems = document.querySelectorAll(".highlight-item");
+        highlightItems.forEach((item) => {
+          const titleElement = item.querySelector(".highlight-title");
+          const highlightTitle = titleElement.textContent;
+
+          // Remove existing selection number
+          const existingNumber = item.querySelector(".selection-number");
+          if (existingNumber) {
+            existingNumber.remove();
+          }
+
+          // Find if this highlight is selected
+          const selectedIndex = userRankings.findIndex(
+            (ranking) => ranking && ranking.title === highlightTitle
+          );
+
+          if (selectedIndex !== -1) {
+            item.classList.add("selected");
+            item.style.pointerEvents = "none";
+
+            // Add selection number
+            const selectionNumber = document.createElement("div");
+            selectionNumber.className = "selection-number";
+            selectionNumber.textContent = selectedIndex + 1;
+            item.appendChild(selectionNumber);
+          } else {
+            item.classList.remove("selected");
+            item.style.pointerEvents = "auto";
+          }
+        });
+      }
+
+      function moveUp(index) {
+        if (index > 0 && userRankings[index] && userRankings[index - 1]) {
+          [userRankings[index], userRankings[index - 1]] = [
+            userRankings[index - 1],
+            userRankings[index],
+          ];
+          renderGame();
+
+          if (navigator.vibrate) {
+            navigator.vibrate(30);
+          }
+        }
+      }
+
+      function moveDown(index) {
+        if (index < 9 && userRankings[index] && userRankings[index + 1]) {
+          [userRankings[index], userRankings[index + 1]] = [
+            userRankings[index + 1],
+            userRankings[index],
+          ];
+          renderGame();
+
+          if (navigator.vibrate) {
+            navigator.vibrate(30);
+          }
+        }
+      }
+
+      function playVideo(highlightId, event) {
+        event.stopPropagation();
+
+        const highlight = selectedHighlights.find((h) => h.id === highlightId);
+        if (!highlight) return;
+
+        document.getElementById("videoTitle").textContent = highlight.title;
+        document.getElementById("videoDescription").textContent =
+          highlight.description;
+        document.getElementById("videoModal").style.display = "flex";
+      }
+
+      function closeVideo() {
+        document.getElementById("videoModal").style.display = "none";
+      }
+
+      function submitRankings() {
+        gamePhase = "results";
+
+        // Hide game phase and UI
+        document.getElementById("gamePhase").style.display = "none";
+        document.getElementById("gameUI").style.display = "none";
+
+        // Show results
+        document.getElementById("resultsPhase").style.display = "block";
+
+        showResults();
+      }
+
+      function showResults() {
+        // Get community top 10
+        const communityTop10 = [...selectedHighlights]
+          .sort((a, b) => a.communityRank - b.communityRank)
+          .slice(0, 10);
+
+        // Render community rankings
+        const communityContainer = document.getElementById("communityRankings");
+        communityContainer.innerHTML = "";
+        communityTop10.forEach((highlight, index) => {
+          const item = document.createElement("div");
+          item.className = "highlight-item";
+          item.style.margin = "5px 0";
+          item.style.padding = "10px";
+          item.style.fontSize = "0.9em";
+          item.innerHTML = `
+                    <div class="highlight-content">
+                        <div class="highlight-title" style="font-size: 0.95em;">${
+                          highlight.title
+                        }</div>
+                        <div class="highlight-description" style="font-size: 0.8em;">${
+                          highlight.description
+                        }</div>
+                        <div class="rank-number" style="width: 24px; height: 24px; font-size: 0.8em;">${
+                          index + 1
+                        }</div>
+                    </div>
+                `;
+          communityContainer.appendChild(item);
+        });
+
+        // Render user rankings
+        const yourContainer = document.getElementById("yourFinalRankings");
+        yourContainer.innerHTML = "";
+        userRankings.forEach((highlight, index) => {
+          const item = document.createElement("div");
+          item.className = "highlight-item";
+          item.style.margin = "5px 0";
+          item.style.padding = "10px";
+          item.style.fontSize = "0.9em";
+          item.style.background = "linear-gradient(135deg, #C41E3A, #A01729)";
+          item.innerHTML = `
+                    <div class="highlight-content">
+                        <div class="highlight-title" style="font-size: 0.95em;">${
+                          highlight.title
+                        }</div>
+                        <div class="highlight-description" style="font-size: 0.8em;">${
+                          highlight.description
+                        }</div>
+                        <div class="rank-number" style="width: 24px; height: 24px; font-size: 0.8em;">${
+                          index + 1
+                        }</div>
+                    </div>
+                `;
+          yourContainer.appendChild(item);
+        });
+
+        calculateAgreement(communityTop10);
+      }
+
+      function calculateAgreement(communityTop10) {
+        let totalScore = 0;
+        let matches = 0;
+
+        userRankings.forEach((userPick, userIndex) => {
+          const communityIndex = communityTop10.findIndex(
+            (c) => c.id === userPick.id
+          );
+
+          if (communityIndex !== -1) {
+            const positionDiff = Math.abs(userIndex - communityIndex);
+            const itemScore = Math.max(0, 10 - positionDiff);
+            totalScore += itemScore;
+
+            if (positionDiff === 0) matches++;
+          } else {
+            totalScore += 2;
+          }
+        });
+
+        const agreement = Math.min(100, totalScore);
+
+        // Animate agreement meter
+        setTimeout(() => {
+          document.getElementById("agreementFill").style.width =
+            agreement + "%";
+          document.getElementById(
+            "agreementText"
+          ).textContent = `${agreement}% Sports Taste Match`;
+        }, 1000);
+
+        // Show banter
+        setTimeout(() => {
+          showBanter(agreement, matches);
+        }, 2500);
+      }
+
+      function showBanter(agreement, matches) {
+        const category = banterResponses.find((cat) =>
+          cat.condition(agreement)
+        );
+        const randomResponse =
+          category.responses[
+            Math.floor(Math.random() * category.responses.length)
+          ];
+
+        let banterText = randomResponse;
+
+        if (matches >= 3) {
+          banterText += " You had multiple perfect position matches! 🎯";
+        } else if (matches === 0) {
+          banterText += " Not a single perfect match - you're truly unique! 🦄";
+        }
+
+        // Sport-specific banter
+        if (currentSport === "basketball" && userRankings[0]?.id === 2) {
+          banterText += " Jordan at #1? Classic choice! 👑";
+        } else if (currentSport === "football" && userRankings[0]?.id === 4) {
+          banterText += " 28-3 comeback at #1? Patriots fans approve! 🏆";
+        }
+
+        document.getElementById("banterText").textContent = banterText;
+      }
+
+      function resetGame() {
+        // Reset everything
+        userRankings = [];
+        gamePhase = "selection";
+
+        // Hide results, show sport selection
+        document.getElementById("resultsPhase").style.display = "none";
+        document.getElementById("gamePhase").style.display = "none";
+        document.getElementById("gameUI").style.display = "none";
+        document.getElementById("sportSelection").style.display = "block";
+
+        // Reset agreement meter
+        document.getElementById("agreementFill").style.width = "0%";
+        document.getElementById("agreementText").textContent = "Calculating...";
+      }
+    </script>
+  </body>
+</html>
