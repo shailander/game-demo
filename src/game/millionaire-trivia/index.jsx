@@ -11,7 +11,7 @@ const ESPNSportsMillionaire = () => {
   // Game states
   const [gameState, setGameState] = useState("welcome"); // welcome, playing, using-lifeline, results, shop
   const [currentLevel, setCurrentLevel] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(15);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [activeLifeline, setActiveLifeline] = useState(null);
@@ -23,6 +23,7 @@ const ESPNSportsMillionaire = () => {
     svp: 0,
   });
   const [showingShopModal, setShowingShopModal] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(false);
 
   // Define ESPN personalities as lifelines
   const lifelines = [
@@ -38,6 +39,14 @@ const ESPNSportsMillionaire = () => {
         "Now listen to me! This is BLASPHEMOUS! Option {option} is absolutely preposterous! Remove it immediately!",
         "CLEARLY option {option} is incorrect! Do I need to remind you that I've been covering sports for DECADES?!",
       ],
+      tauntText: [
+        "CLEARLY you don't know sports like I do! That was EGREGIOUS! You should have asked for my help!",
+        "This is BLASPHEMOUS! How do you get that wrong?! I've been telling people about sports for DECADES!",
+      ],
+      encouragementText: [
+        "Don't worry about it! Even the GREATEST make mistakes! You'll get it next time!",
+        "Listen, that was tough! But you've got HEART! Come back stronger!",
+      ],
     },
     {
       id: "mcafee",
@@ -51,6 +60,14 @@ const ESPNSportsMillionaire = () => {
         "Alright brother, I'm looking at these options and I'm thinking it's GOTTA be either {option1} or {option2}. The other ones just don't make any sense!",
         "BOOM! Let me tell you what - you can eliminate {option1} and {option2} right now. Trust me on this one!",
       ],
+      tauntText: [
+        "Ohhhhh brother! That was ROUGH! You gotta trust the process next time!",
+        "YIKES! That one hurt to watch! But hey, that's why they play the games!",
+      ],
+      encouragementText: [
+        "Hey, you gave it a shot! That's all we can ask for! The boys and I believe in you!",
+        "Don't sweat it! Even Tom Brady throws picks sometimes! You'll bounce back!",
+      ],
     },
     {
       id: "svp",
@@ -63,6 +80,14 @@ const ESPNSportsMillionaire = () => {
       helpText: [
         "Looking at this analytically, I'm leaning toward {option}. The statistics and history point that way, but verify it yourself.",
         "Here's my take - while I can't be 100% sure, I believe {option} is your best choice here. Let me explain why...",
+      ],
+      tauntText: [
+        "Well, that didn't go as planned. Sometimes the house wins, my friend.",
+        "Tough break. The numbers were there, but sports can be unpredictable.",
+      ],
+      encouragementText: [
+        "Hey, that's sports for you. Even the best analysts get it wrong sometimes. Keep your head up.",
+        "That was a solid effort. The research was there, just didn't work out this time.",
       ],
     },
   ];
@@ -199,21 +224,45 @@ const ESPNSportsMillionaire = () => {
     },
   ];
 
+  // Timer effect
+  React.useEffect(() => {
+    let interval = null;
+    if (
+      timerRunning &&
+      timeLeft > 0 &&
+      gameState === "playing" &&
+      selectedAnswer === null
+    ) {
+      interval = setInterval(() => {
+        setTimeLeft((timeLeft) => timeLeft - 1);
+      }, 1000);
+    } else if (
+      timeLeft === 0 &&
+      gameState === "playing" &&
+      selectedAnswer === null
+    ) {
+      handleTimesUp();
+    }
+    return () => clearInterval(interval);
+  }, [timerRunning, timeLeft, gameState, selectedAnswer]);
+
   // Start the game
   const startGame = () => {
     setGameState("playing");
     setCurrentLevel(0);
-    setTimeLeft(30);
+    setTimeLeft(15);
     setSelectedAnswer(null);
     setIsCorrect(null);
     setUsedLifelines([]);
     setWalkAwayConfirm(false);
     setShowingShopModal(false);
+    setTimerRunning(true);
   };
 
   // Handle answer selection
   const handleAnswer = (answerIndex) => {
     setSelectedAnswer(answerIndex);
+    setTimerRunning(false);
 
     if (answerIndex === questions[currentLevel].correctAnswer) {
       // Correct answer
@@ -227,7 +276,8 @@ const ESPNSportsMillionaire = () => {
           // Go to next level
           setCurrentLevel(currentLevel + 1);
           setSelectedAnswer(null);
-          setTimeLeft(30);
+          setTimeLeft(15);
+          setTimerRunning(true);
         }
       }, 2000);
     } else {
@@ -243,6 +293,7 @@ const ESPNSportsMillionaire = () => {
   // Handle times up
   const handleTimesUp = () => {
     setIsCorrect(false);
+    setTimerRunning(false);
     setGameState("results");
   };
 
@@ -250,6 +301,7 @@ const ESPNSportsMillionaire = () => {
   const useLifeline = (lifeline) => {
     setActiveLifeline(lifeline);
     setGameState("using-lifeline");
+    setTimerRunning(false);
 
     // Check if using a refill or the original lifeline
     if (ownedLifelineRefills[lifeline.id] > 0) {
