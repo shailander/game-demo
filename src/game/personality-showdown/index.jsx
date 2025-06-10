@@ -501,7 +501,7 @@ const ESPNPersonalityShowdown = () => {
     const currentQ = questions[currentQuestion];
 
     if (answerIndex === currentQ.correctAnswer) {
-      // Correct answer
+      // Correct answer - user gets a point
       setUserScore(userScore + 1);
       const randomReaction =
         selectedPersonality.reactions.correct[
@@ -511,8 +511,7 @@ const ESPNPersonalityShowdown = () => {
         ];
       setReactionText(randomReaction);
     } else {
-      // Wrong answer
-      setAiScore(aiScore + 1);
+      // Wrong answer - no points awarded to anyone
       const randomReaction =
         selectedPersonality.reactions.incorrect[
           Math.floor(
@@ -528,7 +527,7 @@ const ESPNPersonalityShowdown = () => {
 
   // Handle times up
   const handleTimesUp = () => {
-    setAiScore(aiScore + 1);
+    // Time's up - no points awarded to anyone
     const randomReaction =
       selectedPersonality.reactions.incorrect[
         Math.floor(
@@ -553,9 +552,16 @@ const ESPNPersonalityShowdown = () => {
       // Game is over
       setGameState("results");
 
-      // Set final reaction
-      if (userScore > aiScore) {
+      // Set final reaction based on performance
+      const totalQuestions = getQuestions(selectedPersonality.id).length;
+      const percentage = (userScore / totalQuestions) * 100;
+
+      if (percentage >= 80) {
         setReactionText(selectedPersonality.reactions.lose);
+      } else if (percentage >= 60) {
+        setReactionText(
+          "Not bad! You know your stuff, but I've still got the edge."
+        );
       } else {
         setReactionText(selectedPersonality.reactions.win);
       }
@@ -740,7 +746,7 @@ const ESPNPersonalityShowdown = () => {
         {/* Score and progress */}
         <div className="flex justify-between items-center w-full bg-gray-100 p-2 rounded mb-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 text-xs">
               YOU
             </div>
             <span className="font-bold text-xl">{userScore}</span>
@@ -753,14 +759,8 @@ const ESPNPersonalityShowdown = () => {
             <div className="text-sm">Time: {timeLeft}s</div>
           </div>
 
-          <div className="flex items-center">
-            <span className="font-bold text-xl">{aiScore}</span>
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center ml-2 text-sm"
-              style={{ backgroundColor: selectedPersonality.color + "40" }}
-            >
-              {selectedPersonality.shortName}
-            </div>
+          <div className="text-gray-500 text-sm">
+            Score to beat: {Math.ceil(questions.length * 0.8)}
           </div>
         </div>
 
@@ -844,12 +844,20 @@ const ESPNPersonalityShowdown = () => {
         {userScore > aiScore
           ? "YOU WIN!"
           : userScore === aiScore
-          ? "IT'S A TIE!"
-          : `${selectedPersonality.name.toUpperCase()} WINS!`}
+          ? "GREAT EFFORT!"
+          : `BETTER LUCK NEXT TIME!`}
       </h2>
 
-      <div className="text-3xl font-bold mb-6">
-        {userScore} - {aiScore}
+      <div className="text-3xl font-bold mb-2">
+        You scored: {userScore} out of{" "}
+        {getQuestions(selectedPersonality.id).length}
+      </div>
+
+      <div className="text-lg mb-6">
+        {Math.round(
+          (userScore / getQuestions(selectedPersonality.id).length) * 100
+        )}
+        % correct
       </div>
 
       <div className="flex w-full mb-6 items-start">
