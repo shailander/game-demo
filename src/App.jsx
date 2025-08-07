@@ -1,9 +1,11 @@
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
-import TriviaShowdown from "./game/trivia-showdown";
+import FoxMillionaireTrivia from "./game/fox-millionaire-trivia";
+import FoxTriviaShowdown from "./game/fox-trivia-showdown";
 import ESPNSportsMillionaire from "./game/millionaire-trivia";
 import ESPNPersonalityShowdown from "./game/personality-showdown";
 import SportsCenter from "./game/sports-center";
+import TriviaShowdown from "./game/trivia-showdown";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           element={<ESPNPersonalityShowdown />}
         />
         <Route path="/sports-center" element={<SportsCenter />} />
+        <Route path="/fox-trivia-showdown" element={<FoxTriviaShowdown />} />
+        <Route path="/fox-millionaire-trivia" element={<FoxMillionaireTrivia />} />
         <Route path="*" element={<Navigate to="/Trivia_Showdown" replace />} />
       </Routes>
     </div>
