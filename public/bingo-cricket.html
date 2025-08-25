@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Cricket Bingo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a237e, #3949ab, #7986cb);
+            color: white;
+            padding: 12px;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            max-width: 500px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .ipl-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .match-info {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .game-phase {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .phase-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .phase-desc {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 8px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            opacity: 0.8;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 16px;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .bingo-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 6px;
+            line-height: 1.1;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bingo-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bingo-cell:active {
+            transform: scale(0.95);
+        }
+
+        .bingo-cell:active::before {
+            opacity: 1;
+        }
+
+        .bingo-cell.selected {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border-color: #ffd700;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .bingo-cell.correct {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            border-color: #4caf50;
+            transform: scale(1.08);
+            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .bingo-cell.selected.correct {
+            background: linear-gradient(135deg, #ffd700, #ffeb3b);
+            color: #1a237e;
+            border-color: #ffd700;
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+            animation: celebration 0.6s ease;
+        }
+
+        @keyframes celebration {
+            0% { transform: scale(1.05); }
+            50% { transform: scale(1.15) rotate(5deg); }
+            100% { transform: scale(1.1); }
+        }
+
+        .points-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: linear-gradient(45deg, #e91e63, #ad1457);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            touch-action: manipulation;
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+        }
+
+        .action-button:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(45deg, #7986cb, #5c6bc0);
+            box-shadow: 0 4px 15px rgba(121, 134, 203, 0.3);
+        }
+
+        .action-button.secondary:active {
+            box-shadow: 0 2px 10px rgba(121, 134, 203, 0.4);
+        }
+
+        .line-tracker {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .line-tracker h3 {
+            font-size: 0.9rem;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .lines-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .line-indicator {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 0.65rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .line-indicator.completed {
+            background: linear-gradient(45deg, #ffd700, #ffeb3b);
+            color: #1a237e;
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .alert {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        .alert.bingo {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: #ffd700;
+            margin-bottom: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .selection-limit {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: #ff6b35;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="ipl-logo">IPL 2024</div>
+            <div class="game-title">Cricket Bingo</div>
+            <div class="match-info" id="matchInfo">MI vs CSK • Over 15.3</div>
+        </div>
+
+        <div class="game-phase" id="gamePhase">
+            <div class="phase-title">Prediction Phase</div>
+            <div class="phase-desc">Select up to 9 events you think will happen during this match</div>
+        </div>
+
+        <div class="alert" id="gameAlert">
+            Event occurred! You earned points! 🎉
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="selectedCount">0</div>
+                <div class="stat-label">Selected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalPoints">0</div>
+                <div class="stat-label">Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bingoLines">0</div>
+                <div class="stat-label">Bingo Lines</div>
+            </div>
+        </div>
+
+        <div class="selection-limit" id="selectionLimit">
+            You can select up to 9 events (0/9 selected)
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-label">Match Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="bingo-grid" id="bingoGrid">
+            <!-- Grid will be populated by JavaScript -->
+        </div>
+
+        <div class="line-tracker">
+            <h3>Bingo Lines Status</h3>
+            <div class="lines-grid">
+                <div class="line-indicator" id="row1">Row 1</div>
+                <div class="line-indicator" id="row2">Row 2</div>
+                <div class="line-indicator" id="row3">Row 3</div>
+                <div class="line-indicator" id="row4">Row 4</div>
+                <div class="line-indicator" id="row5">Row 5</div>
+                <div class="line-indicator" id="col1">Col 1</div>
+                <div class="line-indicator" id="col2">Col 2</div>
+                <div class="line-indicator" id="col3">Col 3</div>
+                <div class="line-indicator" id="col4">Col 4</div>
+                <div class="line-indicator" id="col5">Col 5</div>
+                <div class="line-indicator" id="diag1">Diag ↘</div>
+                <div class="line-indicator" id="diag2">Diag ↙</div>
+            </div>
+        </div>
+
+        <button class="action-button" id="submitBtn" onclick="submitPredictions()">
+            Lock Predictions
+        </button>
+        
+        <button class="action-button secondary" id="newGameBtn" onclick="startNewGame()">
+            New Game
+        </button>
+    </div>
+
+    <script>
+        const iplEvents = [
+            "Helicopter Shot", "Six over Long-on", "Wicket Falls", "Dot Ball", "Single Run",
+            "Wide Ball", "No Ball", "Boundary 4", "LBW Out", "Caught Out",
+            "Run Out", "Bowled Out", "Dropped Catch", "Maiden Over", "Century",
+            "Half Century", "Duck Out", "DRS Review", "Edge to Keeper", "Stumped",
+            "Hit Wicket", "Appeal", "Overthrow", "Misfield", "Free Hit",
+            "Super Over", "Last Ball Six", "Hat-trick", "Fifty Partnership", "Powerplay"
+        ];
+
+        const eventPoints = {
+            "Helicopter Shot": 8, "Six over Long-on": 4, "Wicket Falls": 3, "Dot Ball": 1, "Single Run": 1,
+            "Wide Ball": 2, "No Ball": 2, "Boundary 4": 2, "LBW Out": 4, "Caught Out": 3,
+            "Run Out": 5, "Bowled Out": 4, "Dropped Catch": 4, "Maiden Over": 6, "Century": 15,
+            "Half Century": 8, "Duck Out": 4, "DRS Review": 3, "Edge to Keeper": 3, "Stumped": 5,
+            "Hit Wicket": 7, "Appeal": 1, "Overthrow": 3, "Misfield": 2, "Free Hit": 3,
+            "Super Over": 10, "Last Ball Six": 8, "Hat-trick": 12, "Fifty Partnership": 6, "Powerplay": 2
+        };
+
+        const iplTeams = [
+            "MI vs CSK", "RCB vs KKR", "DC vs PBKS", "RR vs SRH", 
+            "GT vs LSG", "MI vs RCB", "CSK vs KKR", "DC vs RR"
+        ];
+
+        let bingoGrid = [];
+        let selectedCells = new Set();
+        let occurredEvents = new Set();
+        let completedLines = new Set();
+        let gamePhase = 'prediction';
+        let totalPoints = 0;
+        let matchProgress = 0;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function createBingoGrid() {
+            const shuffledEvents = shuffleArray(iplEvents);
+            bingoGrid = shuffledEvents.slice(0, 25);
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const gridElement = document.getElementById('bingoGrid');
+            gridElement.innerHTML = '';
+            
+            bingoGrid.forEach((event, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.textContent = event;
+                cell.onclick = () => toggleCell(index);
+                
+                const points = eventPoints[event];
+                if (points) {
+                    const badge = document.createElement('div');
+                    badge.className = 'points-badge';
+                    badge.textContent = points;
+                    cell.appendChild(badge);
+                }
+                
+                gridElement.appendChild(cell);
+            });
+        }
+
+        function toggleCell(index) {
+            if (gamePhase !== 'prediction') return;
+            
+            const cell = document.querySelectorAll('.bingo-cell')[index];
+            
+            if (selectedCells.has(index)) {
+                selectedCells.delete(index);
+                cell.classList.remove('selected');
+            } else {
+                if (selectedCells.size >= 9) {
+                    showAlert('You can only select up to 9 events!', false);
+                    return;
+                }
+                selectedCells.add(index);
+                cell.classList.add('selected');
+            }
+            
+            updateStats();
+            updateSelectionLimit();
+        }
+
+        function updateSelectionLimit() {
+            const limitElement = document.getElementById('selectionLimit');
+            const selected = selectedCells.size;
+            limitElement.textContent = `You can select up to 9 events (${selected}/9 selected)`;
+            
+            if (selected >= 9) {
+                limitElement.style.background = 'rgba(76, 175, 80, 0.15)';
+                limitElement.style.borderColor = 'rgba(76, 175, 80, 0.3)';
+                limitElement.style.color = '#4caf50';
+                limitElement.textContent = '✓ Maximum selections reached (9/9)';
+            }
+        }
+
+        function updateStats() {
+            const selected = selectedCells.size;
+            const correct = [...selectedCells].filter(index => occurredEvents.has(index)).length;
+            
+            document.getElementById('selectedCount').textContent = selected;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('bingoLines').textContent = completedLines.size;
+        }
+
+        function updateGamePhase() {
+            const phaseElement = document.getElementById('gamePhase');
+            const phaseTitle = phaseElement.querySelector('.phase-title');
+            const phaseDesc = phaseElement.querySelector('.phase-desc');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            switch(gamePhase) {
+                case 'prediction':
+                    phaseTitle.textContent = 'Prediction Phase';
+                    phaseDesc.textContent = 'Select up to 9 events you think will happen during this match';
+                    submitBtn.textContent = 'Lock Predictions';
+                    submitBtn.disabled = false;
+                    break;
+                case 'live':
+                    phaseTitle.textContent = 'Live Match';
+                    phaseDesc.textContent = 'Earning points as your predicted events occur during the match!';
+                    submitBtn.textContent = 'Predictions Locked';
+                    submitBtn.disabled = true;
+                    break;
+            }
+        }
+
+        function checkLines() {
+            const newCompletedLines = new Set();
+            
+            // Check rows
+            for (let row = 0; row < 5; row++) {
+                let complete = true;
+                for (let col = 0; col < 5; col++) {
+                    const index = row * 5 + col;
+                    if (!selectedCells.has(index) || !occurredEvents.has(index)) {
+                        complete = false;
+                        break;
+                    }
+                }
+                if (complete) {
+                    newCompletedLines.add(`row${row + 1}`);
+                }
+            }
+            
+            // Check columns
+            for (let col = 0; col < 5; col++) {
+                let complete = true;
+                for (let row = 0; row < 5; row++) {
+                    const index = row * 5 + col;
+                    if (!selectedCells.has(index) || !occurredEvents.has(index)) {
+                        complete = false;
+                        break;
+                    }
+                }
+                if (complete) {
+                    newCompletedLines.add(`col${col + 1}`);
+                }
+            }
+            
+            // Check diagonals
+            let diag1Complete = true;
+            let diag2Complete = true;
+            for (let i = 0; i < 5; i++) {
+                const diag1Index = i * 5 + i;
+                const diag2Index = i * 5 + (4 - i);
+                
+                if (!selectedCells.has(diag1Index) || !occurredEvents.has(diag1Index)) {
+                    diag1Complete = false;
+                }
+                if (!selectedCells.has(diag2Index) || !occurredEvents.has(diag2Index)) {
+                    diag2Complete = false;
+                }
+            }
+            if (diag1Complete) newCompletedLines.add('diag1');
+            if (diag2Complete) newCompletedLines.add('diag2');
+            
+            // Check for new bingos
+            const newBingos = [...newCompletedLines].filter(line => !completedLines.has(line));
+            if (newBingos.length > 0) {
+                showAlert('🎉 BINGO! You completed a line! 🎉', true);
+                totalPoints += newBingos.length * 10; // Bonus points for bingo lines
+            }
+            
+            completedLines = newCompletedLines;
+            updateLineIndicators();
+        }
+
+        function updateLineIndicators() {
+            const indicators = ['row1', 'row2', 'row3', 'row4', 'row5', 'col1', 'col2', 'col3', 'col4', 'col5', 'diag1', 'diag2'];
+            
+            indicators.forEach(id => {
+                const element = document.getElementById(id);
+                if (completedLines.has(id)) {
+                    element.classList.add('completed');
+                } else {
+                    element.classList.remove('completed');
+                }
+            });
+        }
+
+        function showAlert(message, isBingo = false) {
+            const alert = document.getElementById('gameAlert');
+            alert.textContent = message;
+            alert.classList.toggle('bingo', isBingo);
+            alert.classList.add('show');
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, isBingo ? 4000 : 2500);
+        }
+
+        function submitPredictions() {
+            if (selectedCells.size === 0) {
+                showAlert('Please select at least one event before locking predictions!');
+                return;
+            }
+            
+            gamePhase = 'live';
+            updateGamePhase();
+            showAlert(`🏏 Predictions locked! Selected ${selectedCells.size} events. Match starting...`);
+            
+            // Start simulating match events
+            startMatchSimulation();
+        }
+
+        function startMatchSimulation() {
+            const simulationInterval = setInterval(() => {
+                if (matchProgress >= 100) {
+                    clearInterval(simulationInterval);
+                    showAlert('🏁 Match Complete! Check your final score!');
+                    return;
+                }
+                
+                // Random chance of event occurring
+                if (Math.random() < 0.3) {
+                    const randomIndex = Math.floor(Math.random() * 25);
+                    
+                    if (!occurredEvents.has(randomIndex)) {
+                        occurredEvents.add(randomIndex);
+                        const cell = document.querySelectorAll('.bingo-cell')[randomIndex];
+                        cell.classList.add('correct');
+                        
+                        // Award points if user selected this event
+                        if (selectedCells.has(randomIndex)) {
+                            const event = bingoGrid[randomIndex];
+                            const points = eventPoints[event];
+                            totalPoints += points;
+                            cell.classList.add('selected');
+                            showAlert(`${event} occurred! +${points} points! 🎯`);
+                        }
+                        
+                        checkLines();
+                        updateStats();
+                    }
+                }
+                
+                // Update match progress
+                matchProgress += Math.random() * 3 + 1;
+                if (matchProgress > 100) matchProgress = 100;
+                
+                document.getElementById('progressFill').style.width = matchProgress + '%';
+                
+            }, 2000 + Math.random() * 3000); // Random intervals between 2-5 seconds
+        }
+
+        function startNewGame() {
+            // Reset everything
+            selectedCells.clear();
+            occurredEvents.clear();
+            completedLines.clear();
+            totalPoints = 0;
+            matchProgress = 0;
+            gamePhase = 'prediction';
+            
+            // Clear all visual states
+            document.querySelectorAll('.bingo-cell').forEach(cell => {
+                cell.classList.remove('selected', 'correct');
+            });
+            
+            document.getElementById('progressFill').style.width = '0%';
+            
+            // Create new grid and update UI
+            createBingoGrid();
+            updateStats();
+            updateGamePhase();
+            updateSelectionLimit();
+            updateLineIndicators();
+            
+            // Update match info
+            const randomTeams = iplTeams[Math.floor(Math.random() * iplTeams.length)];
+            const randomOver = Math.floor(Math.random() * 20) + 1;
+            const randomBall = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('matchInfo').textContent = `${randomTeams} • Over ${randomOver}.${randomBall}`;
+            
+            showAlert('🏏 New IPL match started! Make your predictions!');
+        }
+
+        // Initialize game
+        createBingoGrid();
+        updateStats();
+        updateGamePhase();
+        updateSelectionLimit();
+        
+        // Set initial match info
+        const randomTeams = iplTeams[Math.floor(Math.random() * iplTeams.length)];
+        document.getElementById('matchInfo').textContent = `${randomTeams} • Over 15.3`;
+    </script>
+</body>
+</html>
+
