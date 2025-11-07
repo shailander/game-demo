@@ -14,6 +14,10 @@ const FoxTriviaShowdown = () => {
   const [userAnswer, setUserAnswer] = useState(null);
   const [reactionText, setReactionText] = useState("");
   const [showingReaction, setShowingReaction] = useState(false);
+
+  useEffect(()=>{
+    document.title = 'Trivia Showdown'
+  },[])
   
   // Define sports
   const sports = [

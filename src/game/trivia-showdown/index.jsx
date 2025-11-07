@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 // Main component
 const TriviaShowdown = () => {
@@ -13,6 +13,10 @@ const TriviaShowdown = () => {
   const [userAnswer, setUserAnswer] = useState(null);
   const [reactionText, setReactionText] = useState("");
   const [showingReaction, setShowingReaction] = useState(false);
+
+  useEffect(() => {
+    document.title = "Trivia Showdown";
+  }, []);
 
   // Define ESPN personalities
   const personalities = [

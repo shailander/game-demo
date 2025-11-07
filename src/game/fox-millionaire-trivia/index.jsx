@@ -1,5 +1,5 @@
 import { AlertCircle, Award, Headphones, TrendingUp } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const FoxMillionaireTrivia = () => {
   // Game states
@@ -18,6 +18,10 @@ const FoxMillionaireTrivia = () => {
   });
   const [showingShopModal, setShowingShopModal] = useState(false);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  useEffect(()=>{
+    document.title = 'Millionaire Trivia'
+  },[])
   
   // Define Fox Sports personalities as lifelines
   const lifelines = [

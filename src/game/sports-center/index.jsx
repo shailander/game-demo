@@ -1,4 +1,9 @@
+import { useEffect } from "react";
+
 export default function SportsCenter() {
+  useEffect(()=>{
+    document.title = 'Sports Center'
+  },[])
   return (
     <iframe
       className="h-screen w-screen"

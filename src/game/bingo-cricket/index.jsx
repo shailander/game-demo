@@ -1,5 +1,9 @@
+import { useEffect } from "react";
+
 export default function BingoCricket() {
-    console.log("HI")
+    useEffect(()=>{
+      document.title = 'Bingo Cricket'
+    },[])
     return (
       <iframe
         className="h-screen w-screen"

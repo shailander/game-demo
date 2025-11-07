@@ -1,11 +1,11 @@
-import React, { useState } from "react";
 import {
   AlertCircle,
   Award,
-  TrendingUp,
   Headphones,
   ShoppingCart,
+  TrendingUp,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 const ESPNSportsMillionaire = () => {
   // Game states
@@ -24,6 +24,10 @@ const ESPNSportsMillionaire = () => {
   });
   const [showingShopModal, setShowingShopModal] = useState(false);
   const [timerRunning, setTimerRunning] = useState(false);
+
+  useEffect(()=>{
+    document.title = 'Millionaire Trivia'
+  },[])
 
   // Define ESPN personalities as lifelines
   const lifelines = [
